@@ -45,3 +45,41 @@ def pytest_runtest_makereport(item, call):
     except WebDriverException:
         # No convertir un fallo normal en INTERNALERROR
         pass
+
+def _ensure_dir(path: str) -> None:
+    os.makedirs(path, exist_ok=True)
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+
+    # Solo en fallo del "call" (no setup/teardown)
+    if report.when != "call" or report.passed:
+        return
+
+    driver = item.funcargs.get("driver")
+    if not driver:
+        return
+
+    screenshots_dir = os.path.join("artifacts", "screenshots")
+    _ensure_dir(screenshots_dir)
+
+    ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    filename = os.path.join(screenshots_dir, f"{item.name}-{ts}.png")
+
+    try:
+        driver.save_screenshot(filename)
+    except Exception:
+        return
+
+    # Attach a Allure (si está disponible)
+    try:
+        import allure
+        allure.attach.file(
+            filename,
+            name=f"screenshot-{item.name}",
+            attachment_type=allure.attachment_type.PNG
+        )
+    except Exception:
+        pass
