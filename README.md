@@ -34,3 +34,12 @@ Notas de estabilidad
 Headless es el default para evitar prompts nativos del navegador (Password Manager/Leak Detection) que no pertenecen al DOM y pueden interferir con tests UI.
 
 En fallos, se guarda screenshot automáticamente en artifacts/screenshots/.
+
+
+## Allure Report
+
+pytest -q --alluredir=artifacts/allure-results
+
+Open report:
+
+allure serve artifacts/allure-results
