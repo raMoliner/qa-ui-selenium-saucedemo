@@ -37,35 +37,55 @@ jobs:
         env:
           HEADLESS: "1"
         run: |
+          mkdir -p artifacts/allure-results
           pytest -q --alluredir=artifacts/allure-results
 
+      - name: Add environment info
+        if: always()
+        run: |
+          mkdir -p artifacts/allure-results
+          cat > artifacts/allure-results/environment.properties << 'EOF'
+          Browser=Chrome
+          Environment=CI
+          BaseURL=https://www.saucedemo.com
+          EOF
+
+      - name: Add executor info (Allure)
+        if: always()
+        run: |
+          cat > artifacts/allure-results/executor.json << 'EOF'
+          {
+            "name": "GitHub Actions",
+            "type": "github",
+            "reportName": "Allure Report",
+            "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "buildOrder": "${{ github.run_number }}",
+            "buildName": "run-${{ github.run_number }}"
+          }
+          EOF
+          
       - name: Install Allure CLI
+        if: always()
         run: |
           sudo apt-get update
           sudo apt-get install -y default-jre
-          curl -o allure.tgz -Ls https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
-          tar -zxvf allure.tgz
+          curl -Ls -o allure.tgz https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+          tar -xzf allure.tgz
           sudo mv allure-2.24.0 /opt/allure
-          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+          sudo ln -sf /opt/allure/bin/allure /usr/local/bin/allure
+          allure --version
 
       - name: Generate Allure HTML report
         if: always()
         run: |
+          mkdir -p artifacts/allure-report
           allure generate artifacts/allure-results -o artifacts/allure-report --clean
 
-      # Subimos el HTML como "Pages artifact" (esto lo usa el deploy)
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: artifacts/allure-report
-
-      - name: Add environment info
-        run: |
-          echo "Browser=Chrome" >> artifacts/allure-results/environment.properties
-          echo "Environment=CI" >> artifacts/allure-results/environment.properties
-          echo "BaseURL=https://www.saucedemo.com" >> artifacts/allure-results/environment.properties
-
 
   deploy:
     if: github.ref == 'refs/heads/main'
