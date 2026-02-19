@@ -1,3 +1,5 @@
+![CI](https://github.com/raMoliner/qa-ui-selenium-saucedemo/actions/workflows/ci.yml/badge.svg)
+
 # QA UI Automation - SauceDemo (Selenium + Pytest, Python)
 
 Proyecto de automatización UI usando Page Object Model (POM) y Pytest sobre https://www.saucedemo.com

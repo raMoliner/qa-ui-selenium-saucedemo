@@ -6,10 +6,21 @@ from pages.cart_page import CartPage
 from pages.checkout_page import CheckoutPage
 
 
-@allure.epic("E2E Web")
+@allure.epic("E-Commerce Platform")
 @allure.feature("Checkout")
-@allure.story("Compra completa exitosa")
+@allure.story("Successful purchase flow")
 @allure.severity(allure.severity_level.CRITICAL)
+@allure.title("E2E Checkout - Successful Purchase")
+@allure.description("""
+Validates that a standard user can:
+- Login
+- Add product to cart
+- Complete checkout
+- See confirmation message
+
+Covers main revenue path of the application.
+""")
+@allure.link("https://jira.company.com/QA-101", name="Test Case QA-101")
 @pytest.mark.smoke
 def test_checkout_smoke_e2e(driver):
     item = "Sauce Labs Backpack"

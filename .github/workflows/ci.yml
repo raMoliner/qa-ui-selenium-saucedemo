@@ -60,6 +60,13 @@ jobs:
         with:
           path: artifacts/allure-report
 
+      - name: Add environment info
+        run: |
+          echo "Browser=Chrome" >> artifacts/allure-results/environment.properties
+          echo "Environment=CI" >> artifacts/allure-results/environment.properties
+          echo "BaseURL=https://www.saucedemo.com" >> artifacts/allure-results/environment.properties
+
+
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: test

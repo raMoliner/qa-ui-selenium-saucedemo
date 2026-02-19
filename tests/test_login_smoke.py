@@ -2,7 +2,11 @@ from pages.login_page import LoginPage
 from utils.driver_factory import get_driver
 import pytest
 
-@pytest.mark.smoke
+@allure.epic("E-Commerce Platform")
+@allure.feature("Authentication")
+@allure.story("Valid login")
+@allure.severity(allure.severity_level.BLOCKER)
+@allure.title("Login with valid credentials")
 def test_valid_login_smoke():
     driver = get_driver()
     try:
