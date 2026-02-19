@@ -63,7 +63,7 @@ jobs:
             "buildName": "run-${{ github.run_number }}"
           }
           EOF
-          
+
       - name: Install Allure CLI
         if: always()
         run: |
